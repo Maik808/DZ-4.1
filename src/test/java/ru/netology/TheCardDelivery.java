@@ -9,8 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.withText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 
 public class TheCardDelivery {
@@ -49,7 +48,7 @@ public class TheCardDelivery {
     }
 
     @Test
-    void shouldSendFormWithNonCorrectPhoneNumber(){
+    void shouldSendFormWithNonCorrectPhoneNumber() {
         SelenideElement form = $(".form");
         $("[data-test-id=city] input").setValue("Кострома");
         $("[data-test-id=date] input").sendKeys(formatter.format(newDate));
@@ -84,7 +83,50 @@ public class TheCardDelivery {
         $("[data-test-id=\"date\"] .input__sub").shouldHave(exactText("Заказ на выбранную дату невозможен"));
     }
 
+    @Test
+    void shouldSendFormWithoutName() {
+        SelenideElement form = $(".form");
+        $("[data-test-id=city] input").setValue("Кострома");
+        $("[data-test-id=date] input").sendKeys(formatter.format(newDate));
+        $("[data-test-id=phone] input").setValue("+79038965656");
+        $("[data-test-id=agreement]").click();
+        $(".button").click();
+        $("[data-test-id=\"name\"] .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+    }
 
+    @Test
+    void shouldSendFormWithoutNumber() {
+        SelenideElement form = $(".form");
+        $("[data-test-id=city] input").setValue("Кострома");
+        $("[data-test-id=date] input").sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue("Василий Васин");
+        $("[data-test-id=agreement]").click();
+        $(".button").click();
+        $("[data-test-id=\"phone\"] .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+    }
+
+    @Test
+    void shouldSendFormWithoutCheckbox() {
+        SelenideElement form = $(".form");
+        $("[data-test-id=city] input").setValue("Кострома");
+        $("[data-test-id=date] input").sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue("Василий Васин");
+        $("[data-test-id=phone] input").setValue("+79038965656");
+        $(".button").click();
+        $(".input_invalid").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+    }
+
+    @Test
+    void shouldSubmitRequestWithDropDownList() {
+        $("[data-test-id=city] input").setValue("Кос");
+        $$(".menu-item").first().click();
+        $("[data-test-id=date] input").setValue("");
+        $(".input__icon").click();
+        $$("td").find(exactText("10")).click();
+        $("[name=name]").setValue("Василий Васин");
+        $("[name=phone]").setValue("+79038965656");
+        $(".checkbox__box").click();
+        $$(".button__content").find(exactText("Забронировать")).click();
+        $(withText("Успешно")).waitUntil(visible, 15000);
+    }
 }
-
-

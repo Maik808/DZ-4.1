@@ -120,9 +120,6 @@ public class TheCardDelivery {
     void shouldSubmitRequestWithDropDownList() {
         $("[data-test-id=city] input").setValue("Кос");
         $$(".menu-item").first().click();
-        $("[data-test-id=date] input").setValue("");
-        $(".input__icon").click();
-        $$("td").find(exactText("10")).click();
         $("[name=name]").setValue("Василий Васин");
         $("[name=phone]").setValue("+79038965656");
         $(".checkbox__box").click();
